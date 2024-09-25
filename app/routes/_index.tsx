@@ -1,6 +1,6 @@
 import {defer, type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 import {Await, useLoaderData, Link, type MetaFunction} from '@remix-run/react';
-import {Suspense} from 'react';
+import {Suspense, useEffect, useState} from 'react';
 import {Image, Money} from '@shopify/hydrogen';
 import type {
   FeaturedCollectionFragment,
@@ -57,8 +57,21 @@ function loadDeferredData({context}: LoaderFunctionArgs) {
 
 export default function Homepage() {
   const data = useLoaderData<typeof loader>();
+
+  const [repoName, setRepoName] = useState('');
+
+  useEffect(() => {
+    fetch('https://api.github.com/repos/mswjs/msw')
+      .then((response) => response.json())
+      .then((data: any) => {
+        setRepoName(data.name);
+      });
+  }, []);
+
   return (
     <div className="home">
+      <h1>Repository name: {repoName}</h1>
+
       <FeaturedCollection collection={data.featuredCollection} />
       <RecommendedProducts products={data.recommendedProducts} />
     </div>
